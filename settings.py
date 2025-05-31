@@ -29,7 +29,7 @@ else:
     if not prod_hosts:
         # Fallback or raise error if not in DEBUG mode and no production hosts are set
         print("WARNING: ALLOWED_HOSTS_PROD environment variable not set for production!")
-        ALLOWED_HOSTS = []
+        ALLOWED_HOSTS = ['8000-tonywilson1-artwebsited-z6yonfwvbn2.ws-eu120.gitpod.io']
     else:
         ALLOWED_HOSTS = prod_hosts.split(',')
 
