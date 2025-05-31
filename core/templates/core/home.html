@@ -1,0 +1,190 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Home - Caroline J Hill{% endblock title %}
+
+{% block content %}
+    <section class="hero-section">
+        {# Loop through dynamic hero slides from the view's context #}
+        {% for slide in hero_slides %}
+            <div class="hero-slide {% if forloop.first %}active{% endif %}" 
+                 style="background-image: url('{{ slide.image.url }}');"
+                 data-title="{{ slide.title }}"
+                 data-link="{{ slide.link_url|default:'#' }}">
+            </div>
+        {% empty %}
+            {# Fallback if no active hero slides are configured #}
+            <div class="hero-slide active" 
+                 style="background-image: url('{% static 'core/images/placeholder_hero.jpg' %}');"
+                 data-title="Welcome"
+                 data-link="#">
+            </div>
+        {% endfor %}
+
+        <div class="hero-overlay-content-wrapper container"> 
+            <div class="hero-overlay-content">
+                <div class="hero-main-title">
+                    {# JavaScript will update this h2 based on data-title of the active slide #}
+                    <h2 id="heroSlideTitle">ARTWORK TITLE</h2> 
+                </div>
+                {# JavaScript will update this link based on data-link #}
+                <a href="#" id="heroSlideLink" class="btn btn-view-hero">View Details</a>
+            </div>
+        </div>
+        <div class="hero-main-text-overlay">
+            <h1>Art Showcase</h1> {# This can remain static or also be made CMS manageable if needed #}
+            <p>Sketching daily</p> {# This can remain static or also be made CMS manageable if needed #}
+        </div>
+        <div class="hero-slider-dots">
+            {# JavaScript will populate dots based on the number of slides #}
+        </div>
+    </section>
+
+    <section class="featured-images-grid">
+        <div class="container grid-container">
+            {% for art_piece in featured_artworks %}
+                <div class="grid-item">
+                    <a href="{{ art_piece.get_absolute_url }}"> {# Link to the artwork's detail page #}
+                        <img src="{{ art_piece.primary_image.url }}" alt="{{ art_piece.title }}"> 
+                    </a>
+                </div>
+            {% empty %}
+                {# Fallback if no featured artworks are selected #}
+                <p style="text-align: center; width: 100%;">Featured artworks coming soon.</p>
+                {# You could put static placeholders here too if you prefer #}
+                {% endfor %}
+        </div>
+    </section>
+
+    {# ... Rest of your homepage sections (CTA, Artist Bio Snippet, Blog Teaser) ... #}
+    {# The Artist Bio Snippet and Blog Teaser are still static from your original HTML for now #}
+    {# These could also be made dynamic in future phases if desired #}
+
+    <section class="cta-gallery-section">
+        <div class="container text-center">
+            <h2>GALLERY</h2>
+            <p style="font-size: 1.1em; color: #555; margin-top: 10px; margin-bottom: 20px;">Have a look at my work!</p>
+            <a href="{% url 'core:gallery_home' %}" class="btn btn-secondary">View Gallery</a>
+        </div>
+    </section>
+
+    <section id="artist-bio" class="artist-bio-section">
+        <div class="container">
+            <h2 class="section-title">About The Artist</h2>
+            <img src="{% static 'core/images/artist1.jpg' %}" alt="Photo of Caroline J Hill" style="display: block; margin: 0 auto 20px auto; width: 150px; height: 150px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <p>Welcome! I'm Caroline, a passionate visual artist based in Guildford, England, working primarily in watercolour and ink — also known as line and wash. I love this expressive, spontaneous medium for the way it captures both detail and emotion with simplicity and charm...  
+            <a href="{% url 'about' %}" class="artist-btn">Read more.</a></p>
+        </div>
+    </section>
+
+    <section class="blog-teaser-section" style="padding: 50px 0; background-color: #f9f9f9;">
+        {# This blog teaser section will be made dynamic in Phase 2 when blog functionality is complete #}
+        {# For now, using the static HTML content as a placeholder #}
+        <div class="container text-center">
+            <h2 class="section-title" style="color: #2c3e50; margin-bottom: 40px;">From the Studio: Where it all began</h2>
+            <div class="latest-blog-post-preview" style="max-width: 700px; margin: 0 auto 30px auto; background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: left;">
+                <img src="{% static 'core/images/blog-portrait.jpg' %}" alt="Exploring New Textures" style="width: 100%; height: auto; max-height: 300px; object-fit: cover; border-radius: 6px; margin-bottom: 20px;">
+                <h3 style="font-size: 1.8em; color: #34495e; margin-bottom: 10px;"><a href="#" style="color: inherit; text-decoration: none;">A Rose That Sparked a Lifetime of Art</a></h3>
+                <p style="font-size: 0.9em; color: #777; margin-bottom: 15px;">Published on <time datetime="2025-05-31">31 May 2025</time></p>
+                <p style="color: #333; line-height: 1.6; margin-bottom: 20px;">
+                    It was a beautiful, sunlit day—one of those golden memories that stays with you forever...
+                </p>
+                <a href="#" class="btn btn-view-hero" style="margin-right: 10px; background-color: #5cb85c; border-color: #4cae4c; color:white;">Read This Post</a>
+                <a href="{% url 'blog_list' %}" class="btn btn-secondary">Visit Blog Page</a>
+            </div>
+        </div>
+    </section>
+
+{% endblock content %}
+
+
+{% block body_scripts %}
+    {# Your Hero Slider JavaScript from static index.html - it should still work if the HTML structure it targets is generated correctly by the loop #}
+    <script>
+        // Hero Slider JavaScript
+        // Ensure this script correctly finds your dynamically generated .hero-slide elements
+        // and that the data-title and data-link attributes are correctly used.
+        if (document.querySelector('.hero-section')) { 
+            const slides = document.querySelectorAll('.hero-section .hero-slide'); // This selector should still work
+            const dotsContainer = document.querySelector('.hero-slider-dots');
+            const heroSlideTitleElement = document.getElementById('heroSlideTitle');
+            const heroSlideLinkElement = document.getElementById('heroSlideLink');
+
+            let currentSlide = 0;
+            const slideInterval = 4000; 
+
+            function updateSlideText(slideIndex) {
+                if (!slides[slideIndex] || !heroSlideTitleElement || !heroSlideLinkElement) return; 
+                const activeSlide = slides[slideIndex];
+                const title = activeSlide.dataset.title || "Artwork Title"; 
+                const link = activeSlide.dataset.link || "#"; 
+                heroSlideTitleElement.textContent = title;
+                heroSlideLinkElement.href = link;
+            }
+            function createDots() {
+                if (!dotsContainer || slides.length <= 1) return;
+                dotsContainer.innerHTML = ''; 
+                slides.forEach((slide, index) => {
+                    const dot = document.createElement('span');
+                    dot.classList.add('dot');
+                    if (index === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => {
+                        goToSlide(index);
+                        resetInterval();
+                    });
+                    dotsContainer.appendChild(dot);
+                });
+            }
+            function updateDots() {
+                if (!dotsContainer) return;
+                const dots = dotsContainer.querySelectorAll('.dot');
+                dots.forEach((dot, index) => {
+                    if(dot) dot.classList.toggle('active', index === currentSlide);
+                });
+            }
+            function goToSlide(slideIndex) {
+                // Ensure currentSlide is valid before trying to remove 'active'
+                if (slides[currentSlide] && slides.length > 0) {
+                     slides[currentSlide].classList.remove('active');
+                }
+                currentSlide = (slideIndex + slides.length) % slides.length; 
+                if (slides[currentSlide]) { // Check again for currentSlide after update
+                    slides[currentSlide].classList.add('active');
+                    updateSlideText(currentSlide); 
+                    updateDots();
+                }
+            }
+            function nextSlide() {
+                goToSlide(currentSlide + 1);
+            }
+            let heroSliderInterval;
+            function startInterval() {
+                if (slides.length > 1) {
+                    heroSliderInterval = setInterval(nextSlide, slideInterval);
+                }
+            }
+            function resetInterval() {
+                if (slides.length > 1) {
+                    clearInterval(heroSliderInterval);
+                    startInterval();
+                }
+            }
+
+            if (slides.length > 0) { 
+                goToSlide(0); // Initialize first slide correctly
+                if (slides.length > 1) {
+                    // createDots(); // Call createDots after goToSlide(0) has set currentSlide
+                    // startInterval(); // Call startInterval after createDots
+                }
+            }
+             // Slight re-order for init if slides.length > 0
+            if (document.querySelector('.hero-section') && slides.length > 0) {
+                goToSlide(0); // Set initial slide and text
+                if (slides.length > 1) {
+                    createDots(); // Then create dots
+                    startInterval(); // Then start interval
+                }
+            }
+        }
+    </script>
+{% endblock body_scripts %}

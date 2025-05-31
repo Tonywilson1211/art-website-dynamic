@@ -21,7 +21,7 @@
     <header class="site-header">
         <div class="container header-container">
             <div class="site-branding">
-                <h1 class="site-title"><a href="{% url 'home' %}" style="color: #fff; text-decoration: none;">Caroline J Hill</a></h1>
+                <h1 class="site-title"><a href="{% url 'core:home' %}" style="color: #fff; text-decoration: none;">Caroline J Hill</a></h1>
                 <p class="site-tagline">Sketching daily</p> 
             </div>
             <button class="mobile-nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
@@ -32,8 +32,8 @@
             <nav class="main-navigation">
                 <ul>
                     {# Ensure your URL names in core/urls.py match these: 'home', 'gallery_home', 'about', 'blog_list', 'contact' #}
-                    <li><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="{% url 'gallery_home' %}">Gallery</a></li>
+                    <li><a href="{% url 'core:home' %}">Home</a></li>
+                    <li><a href="{% url 'core:gallery_home' %}">Gallery</a></li>
                     <li><a href="{% url 'about' %}">Artist</a></li> 
                     <li><a href="{% url 'blog_list' %}">Blog</a></li>
                     <li><a href="{% url 'contact' %}">Contact</a></li>
