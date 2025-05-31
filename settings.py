@@ -6,3 +6,14 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') # Or os.environ.get(
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = '<caroline@cjhill-art.co.uk>' # See step below
+# artwebsite/settings.py
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'core',  # Or 'core.apps.CoreConfig'
+    # Add other apps like 'cloudinary', 'taggit', 'ckeditor' here as you install them
+]
