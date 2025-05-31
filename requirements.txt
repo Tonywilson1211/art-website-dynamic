@@ -1,0 +1,8 @@
+Django==4.2.*
+psycopg2-binary # For PostgreSQL, good to have even if Gitpod uses SQLite initially
+cloudinary
+django-cloudinary-storage
+django-taggit
+django-ckeditor
+Pillow
+requests # For making API calls to Instagram

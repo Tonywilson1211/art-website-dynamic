@@ -1,0 +1,28 @@
+image: gitpod/workspace-python-3.9 # Specifies the base environment
+
+tasks:
+  - name: Setup & Run
+    init: | # Commands run once when the workspace is first created or on prebuild
+      echo "Installing Python packages..."
+      pip install -r requirements.txt
+      echo "Applying database migrations..."
+      python manage.py migrate # Apply initial Django migrations if manage.py exists
+    command: | # Commands run every time the workspace starts
+      echo "Starting Django development server..."
+      # Note: 'artwebsite' will be your Django project name.
+      # If manage.py is not yet created (before django-admin startproject),
+      # you might need to adjust this or run these commands manually first.
+      # For the very first run, you might run `django-admin startproject` manually,
+      # then commit, and then subsequent Gitpod starts can use this.
+      # Assuming manage.py will exist after initial Django setup:
+      python manage.py runserver 0.0.0.0:8000
+
+ports:
+  - port: 8000 # Django's default development server port
+    onOpen: open-preview # Gitpod will automatically open a preview tab for this port
+
+vscode:
+  extensions:
+    - ms-python.python # Official Python extension
+    - batisteo.vscode-django # Django specific helpers
+    # Add any other VS Code extensions you like
