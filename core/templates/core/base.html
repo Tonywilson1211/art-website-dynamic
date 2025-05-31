@@ -1,0 +1,122 @@
+{% load static %} {# Load Django's staticfiles template tags at the top #}
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Caroline J Hill{% endblock title %}</title> {# Default title, can be overridden by child templates #}
+    
+    {# Link to your main CSS file #}
+    <link rel="stylesheet" href="{% static 'core/css/main.css' %}"> 
+    
+    {# Google Fonts link from your static site #}
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    
+    {% block head_extra %}
+    {# For page-specific CSS links or additional meta tags #}
+    {% endblock head_extra %}
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-container">
+            <div class="site-branding">
+                <h1 class="site-title"><a href="{% url 'home' %}" style="color: #fff; text-decoration: none;">Caroline J Hill</a></h1>
+                <p class="site-tagline">Sketching daily</p> 
+            </div>
+            <button class="mobile-nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <nav class="main-navigation">
+                <ul>
+                    {# Ensure your URL names in core/urls.py match these: 'home', 'gallery_home', 'about', 'blog_list', 'contact' #}
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'gallery_home' %}">Gallery</a></li>
+                    <li><a href="{% url 'about' %}">Artist</a></li> 
+                    <li><a href="{% url 'blog_list' %}">Blog</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <li><a href="YOUR_EXTERNAL_SHOP_URL_HERE" target="_blank" rel="noopener noreferrer">Shop</a></li> {# Replace with actual shop URL #}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    <footer class="site-footer-columns">
+        <div class="container footer-columns-container">
+            <div class="footer-column">
+                <h3>THE ARTIST</h3>
+                <p>I'm Caroline, a passionate visual artist based in Guildford, England, working primarily in watercolour and ink — also known as line and wash.</p>
+                <a href="{% url 'about' %}" class="footer-link">Read More</a>
+            </div>
+            <div class="footer-column">
+                <h3>CONNECT</h3>
+                <ul class="social-media-links">
+                    {# Social links will be loaded here dynamically via a context processor later #}
+                    {# See Phase 1, Step 4 of the main guide for setting up the SocialLink model and context processor #}
+                    {% if social_links %}
+                        {% for link in social_links %}
+                            <li>
+                                <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+                                    {{ link.get_platform_name_display }} {# Or your icon logic #}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                         <li></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>JOIN MY MAILING LIST</h3>
+                {# Ensure your 'subscribe_to_blog' URL name is correct in core/urls.py #}
+                <form class="mailing-list-form" method="POST" action="{% url 'subscribe_to_blog' %}">
+                    {% csrf_token %} 
+                    <input type="email" name="email" placeholder="Enter your email address" required aria-label="Email for mailing list">
+                    <button type="submit" class="btn btn-subscribe">Subscribe</button>
+                </form>
+                {% if messages %} {# For displaying success/error messages from Django views #}
+                    <ul class="messages footer-messages"> 
+                        {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        <div class="site-footer-bottom">
+            <div class="container">
+                <p>&copy; <span id="currentYear"></span> Caroline J Hill. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copyright Year Update (Site-wide)
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Mobile Navigation Toggle JavaScript (Site-wide)
+        const navToggle = document.querySelector('.mobile-nav-toggle');
+        const mainNav = document.querySelector('.main-navigation');
+
+        if (navToggle && mainNav) {
+            navToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('nav-open');
+                const isExpanded = mainNav.classList.contains('nav-open');
+                navToggle.setAttribute('aria-expanded', isExpanded);
+            });
+        }
+    </script>
+
+    {% block body_scripts %}
+    {# For page-specific JavaScript files or inline scripts (like the Hero Slider for home.html) #}
+    {% endblock body_scripts %}
+
+</body>
+</html>
