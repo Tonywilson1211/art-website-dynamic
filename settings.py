@@ -3,35 +3,34 @@
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# ... (BASE_DIR and other imports as before) ...
 
 # --- Core Django Settings ---
-
-# SECRET_KEY is loaded from Gitpod Environment Variables
-# Make sure you have set DJANGO_SECRET_KEY in your Gitpod project settings.
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 if not SECRET_KEY:
-    raise ValueError("No DJANGO_SECRET_KEY set in environment variables!")
+    raise ValueError("No DJANGO_SECRET_KEY set in environment variables! Please set it in your Gitpod project settings.")
 
-# DEBUG status is loaded from Gitpod Environment Variables
-# Set DJANGO_DEBUG to "True" in Gitpod project settings for development.
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS is loaded from Gitpod Environment Variables
-# Example for DJANGO_DEBUG=True: set ALLOWED_HOSTS_DEV="localhost,127.0.0.1,.gitpod.io" in Gitpod
-# Example for DJANGO_DEBUG=False: set ALLOWED_HOSTS_PROD="yourdomain.com,www.yourdomain.com" in Gitpod
+# ALLOWED_HOSTS configuration
 if DEBUG:
-    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS_DEV', 'localhost,127.0.0.1,.gitpod.io').split(',')
+    allowed_hosts_dev_str = os.environ.get('ALLOWED_HOSTS_DEV', 'localhost,127.0.0.1,.gitpod.io')
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_dev_str.split(',')]
 else:
-    # For production, ensure ALLOWED_HOSTS_PROD is set with your actual domain(s)
     prod_hosts = os.environ.get('ALLOWED_HOSTS_PROD')
     if not prod_hosts:
-        # Fallback or raise error if not in DEBUG mode and no production hosts are set
-        print("WARNING: ALLOWED_HOSTS_PROD environment variable not set for production!")
-        ALLOWED_HOSTS = ['8000-tonywilson1-artwebsited-z6yonfwvbn2.ws-eu120.gitpod.io']
+        print("WARNING: ALLOWED_HOSTS_PROD environment variable not set for production environment!")
+        ALLOWED_HOSTS = []
     else:
-        ALLOWED_HOSTS = prod_hosts.split(',')
+        ALLOWED_HOSTS = [host.strip() for host in prod_hosts.split(',')]
+
+# ADD THESE PRINT STATEMENTS FOR DEBUGGING:
+print(f"--- SETTINGS.PY DEBUGGING ---")
+print(f"DJANGO_DEBUG env var is: {os.environ.get('DJANGO_DEBUG')}")
+print(f"DEBUG setting is: {DEBUG}")
+print(f"ALLOWED_HOSTS_DEV env var is: {os.environ.get('ALLOWED_HOSTS_DEV')}")
+print(f"Computed ALLOWED_HOSTS is: {ALLOWED_HOSTS}")
+print(f"--- END SETTINGS.PY DEBUGGING ---")
 
 
 # --- Application Definition ---
