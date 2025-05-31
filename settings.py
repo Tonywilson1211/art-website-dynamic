@@ -10,27 +10,71 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("No DJANGO_SECRET_KEY set in environment variables! Please set it in your Gitpod project settings.")
 
+# DEBUG status is loaded from Gitpod Environment Variables
+# Ensure DJANGO_DEBUG is set to "True" in Gitpod project settings for development.
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 # ALLOWED_HOSTS configuration
+ALLOWED_HOSTS = []
+
 if DEBUG:
-    allowed_hosts_dev_str = os.environ.get('ALLOWED_HOSTS_DEV', 'localhost,127.0.0.1,.gitpod.io')
-    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_dev_str.split(',')]
-else:
+    # Start with common local development hosts
+    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
+    
+    # Attempt to get the current Gitpod workspace URL and add its hostname
+    # Gitpod often injects GITPOD_WORKSPACE_URL or similar environment variables
+    gitpod_workspace_url = os.environ.get('GITPOD_WORKSPACE_URL')
+    if gitpod_workspace_url:
+        from urllib.parse import urlparse
+        parsed_url = urlparse(gitpod_workspace_url)
+        if parsed_url.hostname:
+            ALLOWED_HOSTS.append(parsed_url.hostname)
+            print(f"DEBUG: Added Gitpod hostname from GITPOD_WORKSPACE_URL: {parsed_url.hostname}")
+    else:
+        print("DEBUG: GITPOD_WORKSPACE_URL environment variable not found.")
+
+    # Add general Gitpod wildcard patterns as fallbacks
+    # The leading dot allows subdomains.
+    ALLOWED_HOSTS.append('.gitpod.io')
+    
+    # You can add a more specific regional wildcard if you notice a consistent pattern
+    # e.g., if your URLs are always like '....ws-eu120.gitpod.io', then add:
+    # ALLOWED_HOSTS.append('.ws-eu120.gitpod.io') # Replace eu120 with your typical region if known
+
+    # If you have set an ALLOWED_HOSTS_DEV environment variable in Gitpod,
+    # its values will be added. For this test, try *without* it set first
+    # to see if the above dynamic/wildcard methods work.
+    additional_dev_hosts_str = os.environ.get('ALLOWED_HOSTS_DEV')
+    if additional_dev_hosts_str:
+        print(f"DEBUG: Adding hosts from ALLOWED_HOSTS_DEV: {additional_dev_hosts_str}")
+        ALLOWED_HOSTS.extend([host.strip() for host in additional_dev_hosts_str.split(',')])
+
+    # Remove duplicates that might have been added and ensure '*' is not used if DEBUG is True for security.
+    # However, for extreme Gitpod debugging if specific hostnames are still tricky,
+    # you might temporarily add '*' here, but remove it immediately after.
+    # For now, we avoid '*'
+    ALLOWED_HOSTS = list(set(ALLOWED_HOSTS)) # Remove duplicates
+
+else: # This is for production (DEBUG=False)
     prod_hosts = os.environ.get('ALLOWED_HOSTS_PROD')
     if not prod_hosts:
         print("WARNING: ALLOWED_HOSTS_PROD environment variable not set for production environment!")
-        ALLOWED_HOSTS = []
+        # Do not default to anything too permissive in production.
+        # It's better to let it fail if not configured.
+        # ALLOWED_HOSTS = [] # Or raise ImproperlyConfigured
     else:
         ALLOWED_HOSTS = [host.strip() for host in prod_hosts.split(',')]
 
-# ADD THESE PRINT STATEMENTS FOR DEBUGGING:
+
+# --- >> YOUR DEBUGGING PRINT STATEMENTS (KEEP THESE) << ---
 print(f"--- SETTINGS.PY DEBUGGING ---")
 print(f"DJANGO_DEBUG env var is: {os.environ.get('DJANGO_DEBUG')}")
-print(f"DEBUG setting is: {DEBUG}")
+print(f"DEBUG setting in Django is: {DEBUG}")
+print(f"GITPOD_WORKSPACE_URL env var is: {os.environ.get('GITPOD_WORKSPACE_URL')}") # New print
 print(f"ALLOWED_HOSTS_DEV env var is: {os.environ.get('ALLOWED_HOSTS_DEV')}")
-print(f"Computed ALLOWED_HOSTS is: {ALLOWED_HOSTS}")
+print(f"Computed ALLOWED_HOSTS in Django is: {ALLOWED_HOSTS}")
 print(f"--- END SETTINGS.PY DEBUGGING ---")
+# --- >> END OF PRINT STATEMENTS << ---
 
 
 # --- Application Definition ---
